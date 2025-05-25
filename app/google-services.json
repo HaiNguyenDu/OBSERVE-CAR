@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "530452241007",
+    "project_id": "oversecar",
+    "storage_bucket": "oversecar.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:530452241007:android:004e37d15dff5be74acb9a",
+        "android_client_info": {
+          "package_name": "com.example.vdk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1pSIAkdpa_n1x0nb5lx1Fl2lNIofPqOo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

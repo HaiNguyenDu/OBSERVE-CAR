@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_black"
+    tools:context=".ui.home.MainActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size_480"
+        android:background="@drawable/bg"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/layout_temperature"
+        android:layout_width="@dimen/size_170"
+        android:layout_height="@dimen/size_200"
+        android:layout_marginStart="@dimen/size_20"
+        android:layout_marginBottom="@dimen/size_20"
+        android:backgroundTint="@color/bg_card"
+        app:cardCornerRadius="@dimen/size_24"
+        app:layout_constraintBottom_toTopOf="@+id/layout_bar"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_temperature"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_16"
+                android:fontFamily="@font/medium"
+                android:text="36ºC"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_32"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:layout_width="@dimen/size_20"
+                android:layout_height="@dimen/size_30"
+                android:layout_marginEnd="@dimen/size_30"
+                android:src="@drawable/ic_temperature"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_temperature"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tv_temperature" />
+
+            <TextView
+                android:id="@+id/tv_t_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_10"
+                android:fontFamily="@font/light"
+                android:maxWidth="@dimen/size_100"
+                android:text="Normal Temperature"
+                android:textColor="@color/text_state"
+                android:textSize="@dimen/font_12"
+                app:layout_constraintStart_toStartOf="@id/tv_temperature"
+                app:layout_constraintTop_toBottomOf="@+id/tv_temperature" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="@dimen/size_20"
+                android:layout_marginBottom="@dimen/size_50"
+                android:background="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/layout_sound"
+        android:layout_width="@dimen/size_170"
+        android:layout_height="@dimen/size_200"
+        android:layout_marginEnd="@dimen/size_20"
+        android:layout_marginBottom="@dimen/size_20"
+        android:backgroundTint="@color/bg_card"
+        app:cardCornerRadius="@dimen/size_24"
+        app:layout_constraintBottom_toTopOf="@+id/layout_bar"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_sound"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_16"
+                android:fontFamily="@font/medium"
+                android:text="50HZ"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_32"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:layout_width="@dimen/size_20"
+                android:layout_height="@dimen/size_30"
+                android:layout_marginEnd="@dimen/size_30"
+                android:src="@drawable/ic_sound"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_sound"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tv_sound" />
+
+            <TextView
+                android:id="@+id/tv_s_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_10"
+                android:fontFamily="@font/light"
+                android:maxWidth="@dimen/size_100"
+                android:text="Normal Sound"
+                android:textColor="@color/text_state"
+                android:textSize="@dimen/font_12"
+                app:layout_constraintStart_toStartOf="@id/tv_sound"
+                app:layout_constraintTop_toBottomOf="@+id/tv_sound" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="@dimen/size_20"
+                android:layout_marginBottom="@dimen/size_50"
+                android:background="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/layout_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size_150"
+        android:layout_marginHorizontal="@dimen/size_20"
+        android:layout_marginBottom="@dimen/size_100"
+        android:backgroundTint="@color/bg_card"
+        app:cardCornerRadius="@dimen/size_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" >
+        <Button
+            android:id="@+id/btn"
+            android:layout_width="@dimen/size_100"
+            android:layout_height="@dimen/size_100"
+
+            />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="280dp"
+        android:layout_marginHorizontal="@dimen/size_20"
+        android:backgroundTint="@color/bg_card"
+        app:cardCornerRadius="@dimen/size_20"
+        app:layout_constraintBottom_toTopOf="@+id/layout_temperature"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <com.github.niqdev.mjpeg.MjpegSurfaceView
+            android:id="@+id/mjpegView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:transparentBackground="true"
+            app:type="stream_default" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
+
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>
