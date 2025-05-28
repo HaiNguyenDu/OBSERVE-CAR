@@ -25,6 +25,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         observeRealtimeData()
+        getAllSensor()
         fetchLatestSensor()
     }
 
@@ -47,7 +48,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun addDataRandomly(
         count: Int = 200,
-        intervalMillis: Long = 2000L
+        intervalMillis: Long = 2000L,
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             repeat(count) {
@@ -77,5 +78,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     override fun onCleared() {
         super.onCleared()
         repository.unregisterObserveData()
+    }
+
+    fun getAllSensor() {
+        viewModelScope.launch {
+            _todaySensors.value = repository.getAllSensor()
+        }
     }
 }

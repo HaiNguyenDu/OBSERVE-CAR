@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -81,9 +82,14 @@ class MainActivity : AppCompatActivity() {
         binding.layoutSound.setOnClickListener {
             startActivity(Intent(this, DetailSoundActivity::class.java))
         }
-        binding.btn.setOnClickListener {
+        binding.btnMuteAll.setOnClickListener {
             val intent = Intent(this, FireBaseService::class.java)
-            intent.action = "off"
+            intent.action = "offAll"
+            startService(intent)
+        }
+        binding.btnMutePhone.setOnClickListener {
+            val intent = Intent(this, FireBaseService::class.java)
+            intent.action = "offPhone"
             startService(intent)
         }
     }
@@ -100,7 +106,7 @@ class MainActivity : AppCompatActivity() {
                     tvSState.text = SOUND.MEDIUM_MESSAGE
                     tvSState.setTextColor(getColor(R.color.green))
                 }
-    
+
                 sound <= SOUND.HIGH -> {
                     tvSState.text = SOUND.HIGH_MESSAGE
                     tvSState.setTextColor(getColor(R.color.red))

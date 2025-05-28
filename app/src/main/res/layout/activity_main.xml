@@ -138,24 +138,73 @@
                 app:layout_constraintStart_toStartOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
+    <androidx.cardview.widget.CardView
+        android:id="@+id/btn_mute_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/size_20"
+        app:cardCornerRadius="@dimen/size_10"
+        app:layout_constraintTop_toBottomOf="@+id/layout_bar"
+        app:layout_constraintEnd_toEndOf="@+id/layout_bar">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/size_15"
+            android:layout_marginVertical="@dimen/size_10"
+            android:fontFamily="@font/lato_bold"
+            android:text="Mute All"
+            android:textSize="@dimen/font_16" />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/btn_mute_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/size_10"
+        app:cardCornerRadius="@dimen/size_10"
+        app:layout_constraintEnd_toStartOf="@+id/btn_mute_all"
+        app:layout_constraintTop_toTopOf="@id/btn_mute_all">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/size_15"
+            android:layout_marginVertical="@dimen/size_10"
+            android:fontFamily="@font/lato_bold"
+            android:text="Mute Phone"
+            android:textSize="@dimen/font_16" />
+    </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/layout_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/size_150"
+        android:layout_height="@dimen/size_100"
         android:layout_marginHorizontal="@dimen/size_20"
         android:layout_marginBottom="@dimen/size_100"
         android:backgroundTint="@color/bg_card"
         app:cardCornerRadius="@dimen/size_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" >
-        <Button
-            android:id="@+id/btn"
-            android:layout_width="@dimen/size_100"
-            android:layout_height="@dimen/size_100"
+        app:layout_constraintStart_toStartOf="parent">
 
-            />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/size_10"
+                android:fontFamily="@font/lato_regular"
+                android:text="There is an object in the car"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_20"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -179,8 +228,8 @@
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
             android:layout_centerInParent="true"
+            android:adjustViewBounds="true"
             android:visibility="gone" />
 
     </androidx.cardview.widget.CardView>

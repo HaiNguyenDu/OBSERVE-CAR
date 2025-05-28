@@ -43,6 +43,8 @@ class Repository(private val context: Context) {
 
     fun getAllSensor(): List<Sensor> {
         val sensors = sensorDao.getAllSensor()
+        if (sensors.isEmpty())
+            return emptyList()
         return sensors.map {
             it.toSensor()
         }

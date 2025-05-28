@@ -41,12 +41,12 @@ class FireBaseService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.action == "off") {
+        if (intent?.action == "offAll") {
             val keyToDelete = "on"
             database.child(keyToDelete)
                 .removeValue()
-            player.pause()
         }
+        player.pause()
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_warning_yellow)
             .setStyle(
