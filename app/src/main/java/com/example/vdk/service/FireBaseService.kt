@@ -70,6 +70,7 @@ class FireBaseService : Service() {
         when (intent?.action) {
             "offAll" -> {
                 val keyToDelete = "on"
+                player.pause()
                 database.child(keyToDelete)
                     .removeValue()
                 Toast.makeText(this, "Mute Sound All Success", Toast.LENGTH_SHORT).show()

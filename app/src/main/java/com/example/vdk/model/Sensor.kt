@@ -18,7 +18,7 @@ data class Sensor(
     }
 
     fun getSoundFormat(): Double {
-        return (((sound * 10) / 102.3).toDouble().roundToInt().toDouble() / 10)
+        return (((sound * 10) / 102.3).roundToInt().toDouble() / 10)
     }
 
     fun toMap(): Map<String, Any> {

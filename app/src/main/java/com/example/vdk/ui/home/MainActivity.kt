@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
         }
         binding.btnMutePhone.setOnClickListener {
             val intent = Intent(this, FireBaseService::class.java)
-            intent.action = "offPhone"
+            intent.action = "offCar"
             startService(intent)
         }
     }
