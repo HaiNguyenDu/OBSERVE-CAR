@@ -58,13 +58,15 @@ class FireBaseService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
         val weight = intent?.getDoubleExtra("weight", 0.0)
         if (weight != null) {
-            if (weight > 0.0) {
+            if (weight > 200.0) {
                 intent.action = "pushNotification"
-            } else if (weight < 0.0)
+            } else if (weight < 200 && weight > 0)
                 intent.action = "cancelNotification"
         }
+
         when (intent?.action) {
             "offAll" -> {
                 val keyToDelete = "on"
