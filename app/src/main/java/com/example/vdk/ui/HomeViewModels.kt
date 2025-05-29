@@ -50,7 +50,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun addDataRandomly(
         count: Int = 200,
-        intervalMillis: Long = 2000L,
+        intervalMillis: Long = 5000L,
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             repeat(count) {
@@ -58,7 +58,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     sound = (1..1023).random().toDouble(),
                     temperature = (1..45).random().toDouble(),
                     time = 0.0,
-                    weight = 0.0
+                    weight = 5.0
                 )
                 repository.addData(newSensor)
                 delay(intervalMillis)

@@ -1,5 +1,6 @@
 package com.example.vdk.ui.detail_tem
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
@@ -12,7 +13,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.vdk.R
 import com.example.vdk.databinding.ActivityDetailTemperatureBinding
 import com.example.vdk.model.Sensor
+import com.example.vdk.service.FireBaseService
 import com.example.vdk.ui.HomeViewModel
+import com.example.vdk.ui.detail_sound.DetailSoundActivity
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
@@ -54,6 +57,10 @@ class DetailTemperatureActivity : AppCompatActivity() {
             binding.apply {
                 tvTemperature.text = sensor.temperatureToString()
             }
+            val intent = Intent(this@DetailTemperatureActivity, FireBaseService::class.java).apply {
+                putExtra("weight", sensor.weight)
+            }
+            startService(intent)
         }
         viewModel.fetchTodayData()
     }

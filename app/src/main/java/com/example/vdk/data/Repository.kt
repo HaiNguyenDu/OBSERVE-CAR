@@ -66,7 +66,7 @@ class Repository(private val context: Context) {
         var result = false
 
         database.child(timestamp).setValue(sensor.toMap())
-            .addOnSuccessListener { result = true }
+            .addOnSuccessListener { true }
             .addOnCanceledListener { result = false }
 
         return result

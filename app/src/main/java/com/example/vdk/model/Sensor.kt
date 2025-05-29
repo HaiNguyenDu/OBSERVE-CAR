@@ -24,7 +24,8 @@ data class Sensor(
     fun toMap(): Map<String, Any> {
         return mapOf(
             "temperature" to temperature,
-            "sound" to sound
+            "sound" to sound,
+            "weight" to weight
         )
     }
 

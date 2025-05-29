@@ -59,6 +59,7 @@ class DetailSoundActivity : AppCompatActivity() {
                 val intent = Intent(this@DetailSoundActivity, FireBaseService::class.java).apply {
                     putExtra("weight", sensor.weight)
                 }
+                startService(intent)
             }
         }
         viewModel.fetchTodayData()

@@ -70,6 +70,10 @@ class MainActivity : AppCompatActivity() {
                 else "No objects in the car"
                 setUpState(sensor.getSoundFormat(), sensor.temperature)
             }
+            val intent = Intent(this@MainActivity, FireBaseService::class.java).apply {
+                putExtra("weight", sensor.weight)
+            }
+            startService(intent)
         }
     }
 
