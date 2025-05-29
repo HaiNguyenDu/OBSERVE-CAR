@@ -10,7 +10,7 @@ data class Sensor(
     val weight: Double = 0.0,
 ) {
     fun temperatureToString(): String {
-        return "$temperature ºC"
+        return "$temperature º"
     }
 
     fun soundToString(): String {

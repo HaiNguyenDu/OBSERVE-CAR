@@ -8,11 +8,11 @@ import com.example.vdk.data.database.entity.SensorEntity
 @Dao
 interface SensorDao {
     @Insert
-    fun insertSensors(sensors: List<SensorEntity> = emptyList<SensorEntity>())
+    suspend fun insertSensors(sensor: SensorEntity)
 
     @Query("DELETE FROM sensor")
-    fun deleteAllSensors(): Int
+    suspend fun deleteAllSensors(): Int
 
     @Query("SELECT * From sensor")
-    fun getAllSensor(): List<SensorEntity>
+    suspend fun getAllSensor(): List<SensorEntity>
 }

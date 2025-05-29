@@ -5,11 +5,13 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.IBinder
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import com.example.vdk.R
@@ -25,6 +27,8 @@ class FireBaseService : Service() {
     private val database = FirebaseDatabase.getInstance(FIREBASE_URL).getReference("Notification")
     private var valueEventListener: ChildEventListener? = null
     private val player: MediaPlayer = MediaPlayer()
+    private val player2: MediaPlayer = MediaPlayer()
+    val notificationIdTing = 1234
     var count = 0
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -37,27 +41,64 @@ class FireBaseService : Service() {
         listenToFirebaseChanges()
         player.setDataSource(this, "android.resource://${packageName}/${R.raw.sound}".toUri())
         player.prepareAsync()
+        player2.setDataSource(this, "android.resource://${packageName}/${R.raw.ting}".toUri())
+        player2.prepare()
         player.setOnCompletionListener { player.start() }
-    }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.action == "offAll") {
-            val keyToDelete = "on"
-            database.child(keyToDelete)
-                .removeValue()
-        }
-        player.pause()
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_warning_yellow)
             .setStyle(
-                NotificationCompat.BigTextStyle().bigText("dang lang nghe")
+                NotificationCompat.BigTextStyle().bigText("Applications running in the background")
             )
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .build()
-        if (count == 0) {
-            startForeground(12, notification)
-            count += 1
+        startForeground(12, notification)
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val weight = intent?.getDoubleExtra("weight", 0.0)
+        if (weight != null) {
+            if (weight > 0.0) {
+                intent.action = "pushNotification"
+            } else if (weight < 0.0)
+                intent.action = "cancelNotification"
+        }
+        when (intent?.action) {
+            "offAll" -> {
+                val keyToDelete = "on"
+                database.child(keyToDelete)
+                    .removeValue()
+                Toast.makeText(this, "Mute Sound All Success", Toast.LENGTH_SHORT).show()
+            }
+
+            "offCar" -> {
+                player.pause()
+                Toast.makeText(this, "Mute Sound Car Success", Toast.LENGTH_SHORT).show()
+            }
+
+            "pushNotification" -> {
+                if (count == 0) {
+                    player2.start()
+                    count += 1
+                    val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_warning_yellow)
+                        .setStyle(
+                            NotificationCompat.BigTextStyle()
+                                .bigText("There is an object in the car")
+                        )
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setAutoCancel(true)
+                        .build()
+                    notificationManager.notify(notificationIdTing, notification)
+                }
+            }
+
+            "cancelNotification" -> {
+                notificationManager.cancel(notificationIdTing)
+                count -= 1
+            }
         }
 
         return START_STICKY

@@ -7,11 +7,13 @@
     android:layout_height="match_parent"
     android:background="@color/bg_black"
     tools:context=".ui.detail_sound.DetailSoundActivity">
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/size_480"
         android:background="@drawable/bg"
         app:layout_constraintTop_toTopOf="parent" />
+
     <ImageView
         android:id="@+id/btn_back"
         android:layout_width="20dp"
@@ -28,7 +30,7 @@
         android:layout_marginTop="@dimen/size_30"
         android:fontFamily="@font/lato_bold"
         android:text="Sound"
-        android:textColor="@color/text_detail"
+        android:textColor="@color/white"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -96,7 +98,7 @@
                 android:layout_marginStart="@dimen/size_20"
                 android:elevation="@dimen/size_10"
                 android:fontFamily="@font/lato_bold"
-                android:text="36º"
+                android:text="0º"
                 android:textColor="@color/text_detail"
                 android:textSize="80sp"
                 app:layout_constraintStart_toEndOf="@+id/ic"

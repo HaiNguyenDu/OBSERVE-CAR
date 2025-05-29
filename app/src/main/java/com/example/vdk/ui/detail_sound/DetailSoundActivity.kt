@@ -1,5 +1,6 @@
 package com.example.vdk.ui.detail_sound
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
@@ -11,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.vdk.R
 import com.example.vdk.databinding.ActivityDetailSoundBinding
 import com.example.vdk.model.Sensor
+import com.example.vdk.service.FireBaseService
 import com.example.vdk.ui.HomeViewModel
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -31,12 +33,18 @@ class DetailSoundActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        supportActionBar?.hide()
         obverseLiveData()
+        setUpButton()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun obverseLiveData() {
         viewModel.todaySensors.observe(this) { list ->
+            if (list.isEmpty()) {
+                viewModel.getAllSensorRoom()
+                return@observe
+            }
             setUpChartDay(list)
             var result = 0.0
             list.forEach {
@@ -48,6 +56,9 @@ class DetailSoundActivity : AppCompatActivity() {
         viewModel.latestSensor.observe(this) { sensor ->
             binding.apply {
                 tvSound.text = sensor.getSoundFormat().toString()
+                val intent = Intent(this@DetailSoundActivity, FireBaseService::class.java).apply {
+                    putExtra("weight", sensor.weight)
+                }
             }
         }
         viewModel.fetchTodayData()
@@ -73,7 +84,18 @@ class DetailSoundActivity : AppCompatActivity() {
 
         binding.chart.xAxis.position = XAxis.XAxisPosition.BOTTOM
         binding.chart.axisRight.isEnabled = false
-
         binding.chart.invalidate()
+    }
+
+    private fun setUpButton() {
+        binding.btnBack.setOnClickListener {
+            finish()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.insertDataToRoom()
     }
 }

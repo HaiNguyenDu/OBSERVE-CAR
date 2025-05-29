@@ -6,7 +6,7 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -42,11 +42,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-    fun startService() {
-        val intent = Intent(this, FireBaseService::class.java)
-        startService(intent)
-    }
-
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,11 +52,12 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        supportActionBar?.hide()
         setContentView(binding.root)
         obverseLiveData()
         setOnClick()
-        startService()
         permissionPushNotification.launch(Manifest.permission.POST_NOTIFICATIONS)
+        setUpCamera()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -70,6 +66,8 @@ class MainActivity : AppCompatActivity() {
             binding.apply {
                 tvSound.text = sensor.soundToString()
                 tvTemperature.text = sensor.temperatureToString()
+                tvWeight.text = if (sensor.weight > 0) "There is an object in the car"
+                else "No objects in the car"
                 setUpState(sensor.getSoundFormat(), sensor.temperature)
             }
         }
@@ -159,12 +157,15 @@ class MainActivity : AppCompatActivity() {
                 // Khi có InputStream, gán vào view
                 binding.mjpegView.setSource(inputStream)
             }, { error ->
+                binding.tvCamera.visibility = View.VISIBLE
                 Log.e(TAG, "Không mở được stream", error)
             })
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onPause() {
         super.onPause()
+        viewModels.insertDataToRoom()
         binding.mjpegView.stopPlayback()
     }
 }

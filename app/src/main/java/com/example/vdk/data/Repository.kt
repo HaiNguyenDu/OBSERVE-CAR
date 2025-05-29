@@ -2,6 +2,7 @@ package com.example.vdk.data
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.example.vdk.data.database.AppDatabase
 import com.example.vdk.data.database.dao.SensorDao
@@ -31,23 +32,33 @@ class Repository(private val context: Context) {
         sensorDao = appDatabase.sensorDao()
     }
 
-    fun insertDataToRoom(sensors: List<Sensor>) {
+    suspend fun insertDataToRoom(sensors: List<Sensor>) {
         val listEntity: List<SensorEntity> = sensors.map {
             it.toEntity()
         }
+        for (i in listEntity) {
+            sensorDao.insertSensors(i)
+        }
     }
 
-    fun deleteDataRoom(): Boolean {
+    suspend fun deleteDataRoom(): Boolean {
         return sensorDao.deleteAllSensors() > 0
     }
 
-    fun getAllSensor(): List<Sensor> {
-        val sensors = sensorDao.getAllSensor()
-        if (sensors.isEmpty())
-            return emptyList()
-        return sensors.map {
-            it.toSensor()
+    suspend fun getAllSensor(): List<Sensor> {
+        try {
+            val sensors = sensorDao.getAllSensor()
+            Log.d("sensors", "sensors:" + sensors.size.toString())
+            if (sensors.isEmpty())
+                return emptyList()
+            return sensors.map {
+                it.toSensor()
+            }
+        } catch (e: Error) {
+            Log.d("database", e.toString())
+            emptyList<Sensor>()
         }
+        return emptyList()
     }
 
     fun addData(sensor: Sensor): Boolean {
@@ -80,7 +91,6 @@ class Repository(private val context: Context) {
     @RequiresApi(Build.VERSION_CODES.O)
     fun getDataToday(callback: (List<Sensor>) -> Unit) {
         val now = LocalDate.now()
-        database.orderByKey()
         val startOfDayMillis = now.atStartOfDay(ZoneId.systemDefault())
             .toInstant()
             .toEpochMilli()

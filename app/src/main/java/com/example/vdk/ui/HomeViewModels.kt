@@ -12,6 +12,9 @@ import com.example.vdk.model.Sensor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.net.HttpURLConnection
+import java.net.URL
 
 @RequiresApi(Build.VERSION_CODES.O)
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
@@ -25,7 +28,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         observeRealtimeData()
-        getAllSensor()
         fetchLatestSensor()
     }
 
@@ -66,23 +68,54 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun fetchTodayData() {
-        repository.getDataToday { list ->
-            for (i in 0..list.size - 1) {
-                list[i].time = i.toDouble()
-            }
-            _todaySensors.value = list
+        viewModelScope.launch {
+            val isOnline = hasInternetAccess()
+            if (isOnline) {
+                repository.getDataToday { list ->
+                    for (i in 0..list.size - 1) {
+                        list[i].time = i.toDouble()
+                    }
+                    _todaySensors.value = list
+                }
+                insertDataToRoom()
+            } else getAllSensorRoom()
 
+        }
+    }
+
+    fun insertDataToRoom() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val list = todaySensors.value ?: return@launch
+            val Items = list
+            repository.deleteDataRoom()
+            repository.insertDataToRoom(Items)
         }
     }
 
     override fun onCleared() {
         super.onCleared()
-        repository.unregisterObserveData()
     }
 
-    fun getAllSensor() {
+    fun getAllSensorRoom() {
         viewModelScope.launch {
-            _todaySensors.value = repository.getAllSensor()
+            val list = repository.getAllSensor()
+            for (i in 0..list.size - 1) {
+                list[i].time = i.toDouble()
+            }
+            _todaySensors.value = list
+        }
+    }
+
+    suspend fun hasInternetAccess(): Boolean = withContext(Dispatchers.IO) {
+        return@withContext try {
+            val url = URL("https://www.google.com")
+            val connection = url.openConnection() as
+                    HttpURLConnection
+            connection.connectTimeout = 3000
+            connection.connect()
+            connection.responseCode == 200
+        } catch (e: Exception) {
+            false
         }
     }
 }

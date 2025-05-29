@@ -7,12 +7,11 @@ import com.example.vdk.model.Sensor
 
 @Entity(
     tableName = "sensor",
-    indices = [
-        Index("time", unique = true)
-    ]
 )
 class SensorEntity(
-    @PrimaryKey
+
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0L,
     val time: Long,
     val temperature: Double,
     val sound: Long,

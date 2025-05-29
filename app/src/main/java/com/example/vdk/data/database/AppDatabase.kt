@@ -13,7 +13,7 @@ import com.example.vdk.data.database.entity.SensorEntity
         SensorEntity::class,
     ],
     exportSchema = false,
-    version = 1
+    version = 4
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun sensorDao(): SensorDao

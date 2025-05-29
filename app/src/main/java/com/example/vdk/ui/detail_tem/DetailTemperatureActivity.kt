@@ -34,7 +34,9 @@ class DetailTemperatureActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        supportActionBar?.hide()
         obverseLiveData()
+        setUpButton()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -78,5 +80,17 @@ class DetailTemperatureActivity : AppCompatActivity() {
         binding.chart.axisRight.isEnabled = false
 
         binding.chart.invalidate()
+    }
+
+    private fun setUpButton() {
+        binding.btnBack.setOnClickListener {
+            finish()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.insertDataToRoom()
     }
 }
