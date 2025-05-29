@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
     private fun obverseLiveData() {
         viewModels.latestSensor.observe(this) { sensor ->
             binding.apply {
-                tvSound.text = sensor.soundToString()
+                tvSound.text = sensor.getSoundFormat().toString()
                 tvTemperature.text = sensor.temperatureToString()
                 tvWeight.text = if (sensor.weight > 0) "There is an object in the car"
                 else "No objects in the car"
