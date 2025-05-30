@@ -6,16 +6,14 @@ import kotlin.math.roundToInt
 data class Sensor(
     val sound: Double = 0.0,
     val temperature: Double = 0.0,
-    var time: Double = 0.0,
+    var time: Long = 0,
     val weight: Double = 0.0,
 ) {
     fun temperatureToString(): String {
-        return "$temperature º"
+        val value = ((temperature * 10).toInt().toDouble()) / 10
+        return "$value º"
     }
 
-    fun soundToString(): String {
-        return (((sound * 10) / 102.3).toDouble().roundToInt() / 10).toString()
-    }
 
     fun getSoundFormat(): Double {
         return (((sound * 10) / 102.3).roundToInt().toDouble() / 10)

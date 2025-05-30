@@ -59,14 +59,6 @@ class FireBaseService : Service() {
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val weight = intent?.getDoubleExtra("weight", 0.0)
-        if (weight != null) {
-            if (weight > 200.0) {
-                intent.action = "pushNotification"
-            } else if (weight < 200 && weight > 0)
-                intent.action = "cancelNotification"
-        }
-
         when (intent?.action) {
             "offAll" -> {
                 val keyToDelete = "on"
@@ -84,7 +76,6 @@ class FireBaseService : Service() {
             "pushNotification" -> {
                 if (count == 0) {
                     player2.start()
-                    count += 1
                     val notification = NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_warning_yellow)
                         .setStyle(
@@ -100,7 +91,6 @@ class FireBaseService : Service() {
 
             "cancelNotification" -> {
                 notificationManager.cancel(notificationIdTing)
-                count -= 1
             }
         }
 

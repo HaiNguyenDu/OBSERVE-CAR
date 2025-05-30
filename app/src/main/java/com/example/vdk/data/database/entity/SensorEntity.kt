@@ -21,7 +21,7 @@ class SensorEntity(
         return Sensor(
             sound = this.sound.toDouble(),
             temperature = this.temperature,
-            time = this.time.toDouble(),
+            time = this.time,
             weight = this.weight
         )
     }

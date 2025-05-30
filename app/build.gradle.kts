@@ -44,6 +44,8 @@ android {
 dependencies {
     implementation("androidx.core:core-ktx:1.16.0")
     val room_version = "2.7.1"
+    implementation("io.reactivex.rxjava2:rxjava:2.2.21")
+    implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")
     kapt("androidx.room:room-compiler:$room_version")

@@ -78,12 +78,12 @@ class Repository(private val context: Context) {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val latestSnapshot = snapshot.children.firstOrNull()
                     val sensor =
-                        latestSnapshot?.getValue(Sensor::class.java) ?: Sensor(0.0, 0.0, 0.0, 0.0)
+                        latestSnapshot?.getValue(Sensor::class.java) ?: Sensor(0.0, 0.0, 0, 0.0)
                     callback(sensor)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    callback(Sensor(0.0, 0.0, 0.0, 0.0))
+                    callback(Sensor(0.0, 0.0, 0, 0.0))
                 }
             })
     }
@@ -101,7 +101,7 @@ class Repository(private val context: Context) {
                     val listData = snapshot.children.mapNotNull { child ->
                         child.getValue(Sensor::class.java)?.let { data ->
                             child.key?.toLongOrNull()?.let { ts ->
-                                data.copy(time = epochMillisToHourDouble(ts).toDouble())
+                                data.copy(time = ts)
                             }
                         }
                     }

@@ -57,7 +57,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 val newSensor = Sensor(
                     sound = (1..1023).random().toDouble(),
                     temperature = (1..45).random().toDouble(),
-                    time = 0.0,
+                    time = 0,
                     weight = 5.0
                 )
                 repository.addData(newSensor)
@@ -72,9 +72,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             val isOnline = hasInternetAccess()
             if (isOnline) {
                 repository.getDataToday { list ->
-                    for (i in 0..list.size - 1) {
-                        list[i].time = i.toDouble()
-                    }
                     _todaySensors.value = list
                 }
                 insertDataToRoom()
@@ -99,9 +96,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     fun getAllSensorRoom() {
         viewModelScope.launch {
             val list = repository.getAllSensor()
-            for (i in 0..list.size - 1) {
-                list[i].time = i.toDouble()
-            }
             _todaySensors.value = list
         }
     }

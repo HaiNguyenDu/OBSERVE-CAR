@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
@@ -15,7 +16,8 @@ import com.example.vdk.databinding.ActivityDetailTemperatureBinding
 import com.example.vdk.model.Sensor
 import com.example.vdk.service.FireBaseService
 import com.example.vdk.ui.HomeViewModel
-import com.example.vdk.ui.detail_sound.DetailSoundActivity
+import com.example.vdk.ui.home.MainActivity
+import com.example.vdk.utils.TimeFormatter
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
@@ -71,27 +73,58 @@ class DetailTemperatureActivity : AppCompatActivity() {
             binding.chart.clear()
             return
         }
-        val listEntry = list.map {
-            Entry(it.time.toFloat(), it.temperature.toFloat())
+
+        // Tạo entries với index thay vì timestamp
+        val listEntry = list.mapIndexed { index, sensor ->
+            Entry(index.toFloat(), sensor.temperature.toFloat())
         }
+
+        // Lấy danh sách timestamps
+        val timestamps = list.map { it.time }
+
         val dataSet = LineDataSet(listEntry, "Nhiệt độ")
-        dataSet.color = getColor(R.color.red)
+        dataSet.color = ContextCompat.getColor(binding.root.context, R.color.red)
         dataSet.valueTextSize = 12f
         dataSet.setDrawValues(false)
         dataSet.setDrawCircles(false)
+        dataSet.lineWidth = 2f
 
         val lineData = LineData(dataSet)
         binding.chart.data = lineData
 
-        binding.chart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-        binding.chart.axisRight.isEnabled = false
+        // Cấu hình trục X với TimeFormatter
+        val xAxis = binding.chart.xAxis
+        xAxis.position = XAxis.XAxisPosition.BOTTOM
 
+        // Tạo và cấu hình TimeFormatter
+        val timeFormatter = TimeFormatter()
+        timeFormatter.setTimestamps(timestamps)
+        xAxis.valueFormatter = timeFormatter
+
+        xAxis.setDrawGridLines(false)
+        xAxis.granularity = 1f
+        xAxis.setLabelCount(5, false) // Hiển thị tối đa 5 labels để tránh chen chúc
+        xAxis.labelRotationAngle = -45f // Xoay labels 45 độ để dễ đọc
+
+
+        binding.chart.axisRight.isEnabled = false
+        val yAxisLeft = binding.chart.axisLeft
+        yAxisLeft.setDrawGridLines(true)
+
+        binding.chart.legend.isEnabled = true
+        binding.chart.description.isEnabled = false
+        binding.chart.setTouchEnabled(true)
+        binding.chart.isDragEnabled = true
+        binding.chart.setScaleEnabled(true)
+
+        // Refresh
+        binding.chart.notifyDataSetChanged()
         binding.chart.invalidate()
     }
 
     private fun setUpButton() {
         binding.btnBack.setOnClickListener {
-            finish()
+            startActivity(Intent(this,MainActivity::class.java))
         }
     }
 
