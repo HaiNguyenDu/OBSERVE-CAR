@@ -82,7 +82,7 @@ class DetailTemperatureActivity : AppCompatActivity() {
         // Lấy danh sách timestamps
         val timestamps = list.map { it.time }
 
-        val dataSet = LineDataSet(listEntry, "Nhiệt độ")
+        val dataSet = LineDataSet(listEntry, "Temperature")
         dataSet.color = ContextCompat.getColor(binding.root.context, R.color.red)
         dataSet.valueTextSize = 12f
         dataSet.setDrawValues(false)
@@ -103,8 +103,7 @@ class DetailTemperatureActivity : AppCompatActivity() {
 
         xAxis.setDrawGridLines(false)
         xAxis.granularity = 1f
-        xAxis.setLabelCount(5, false) // Hiển thị tối đa 5 labels để tránh chen chúc
-        xAxis.labelRotationAngle = -45f // Xoay labels 45 độ để dễ đọc
+        xAxis.setLabelCount(5, false)
 
 
         binding.chart.axisRight.isEnabled = false
@@ -117,7 +116,7 @@ class DetailTemperatureActivity : AppCompatActivity() {
         binding.chart.isDragEnabled = true
         binding.chart.setScaleEnabled(true)
 
-        // Refresh
+
         binding.chart.notifyDataSetChanged()
         binding.chart.invalidate()
     }
@@ -128,9 +127,4 @@ class DetailTemperatureActivity : AppCompatActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.insertDataToRoom()
-    }
 }

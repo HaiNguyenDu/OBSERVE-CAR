@@ -34,13 +34,13 @@ import rx.schedulers.Schedulers
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
-    private val TAG = "MJPEG_DEBUG" // Thay đổi TAG để dễ theo dõi log
+    private val TAG = "MJPEG_DEBUG" 
     private val viewModels: HomeViewModel by viewModels {
         ViewModelProvider.AndroidViewModelFactory.getInstance(application)
     }
     private val permissionPushNotification: ActivityResultLauncher<String> =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            // Xử lý kết quả cấp quyền ở đây nếu cần
+
             if (granted) {
                 Log.d(TAG, "Notification permission granted.")
             } else {
@@ -59,27 +59,22 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         supportActionBar?.hide()
-        // setContentView(binding.root) // Xóa dòng này, đã gọi ở trên
 
         obverseLiveData()
         setOnClick()
         permissionPushNotification.launch(Manifest.permission.POST_NOTIFICATIONS)
-        // Không gọi setUpCamera() ở đây nữa, sẽ gọi trong onResume()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "onResume: Setting up camera.")
-        setUpCamera() // Thiết lập camera mỗi khi activity resume
+        setUpCamera()
     }
 
     override fun onPause() {
         super.onPause()
         Log.d(TAG, "onPause: Stopping camera playback.")
-        // Dừng playback khi activity không còn visible để giải phóng tài nguyên
-        // và tránh lỗi khi không có surface hợp lệ.
-        // Chạy trên luồng IO để tránh block UI thread nếu stopPlayback tốn thời gian.
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 binding.mjpegView.stopPlayback()
@@ -213,7 +208,7 @@ class MainActivity : AppCompatActivity() {
                     binding.tvCamera.visibility = View.GONE // Ẩn thông báo lỗi nếu có
                     binding.mjpegView.visibility = View.VISIBLE
                     binding.mjpegView.setSource(inputStream)
-                    // binding.mjpegView.startPlayback() // Một số thư viện có thể cần gọi startPlayback() sau khi setSource. Kiểm tra tài liệu thư viện Mjpeg.
+
                 },
                 { error ->
                     Log.e(TAG, "Failed to open Mjpeg stream", error)
@@ -224,20 +219,4 @@ class MainActivity : AppCompatActivity() {
             )
     }
 
-    // Không cần override onResume() để stopPlayback nữa, vì onPause sẽ lo việc đó
-    // và setUpCamera trong onResume sẽ tự động stop (nếu cần) rồi mới bắt đầu.
-    // Xóa hàm onResume cũ của bạn nếu nó chỉ có stopPlayback.
-
-    // override fun onStop() {
-    //     super.onStop()
-    //     // Bạn cũng có thể cân nhắc gọi stopPlayback ở onStop thay vì onPause
-    //     // nếu muốn stream tiếp tục chạy khi có dialog hoặc activity trong suốt hiện lên.
-    //     // Tuy nhiên, onPause thường là nơi tốt hơn để giải phóng tài nguyên khi activity không còn tương tác.
-    // }
-
-    // override fun onDestroy() {
-    //    super.onDestroy()
-    //    // Một số thư viện Mjpeg có thể có hàm Mjpeg.shutdown() hoặc mjpegView.release()
-    //    // để giải phóng hoàn toàn tài nguyên. Kiểm tra tài liệu của thư viện.
-    // }
 }

@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.HttpURLConnection
 import java.net.URL
+import kotlin.random.Random
 
 @RequiresApi(Build.VERSION_CODES.O)
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
@@ -56,9 +57,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             repeat(count) {
                 val newSensor = Sensor(
                     sound = (1..1023).random().toDouble(),
-                    temperature = (1..45).random().toDouble(),
+                    temperature = Random.nextDouble(33.0, 34.0),
                     time = 0,
-                    weight = 5.0
+                    weight = 0.0
                 )
                 repository.addData(newSensor)
                 delay(intervalMillis)

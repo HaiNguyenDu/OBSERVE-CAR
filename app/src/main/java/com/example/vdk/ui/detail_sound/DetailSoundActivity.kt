@@ -74,15 +74,15 @@ class DetailSoundActivity : AppCompatActivity() {
             return
         }
 
-        // Tạo entries với index thay vì timestamp
+
         val listEntry = list.mapIndexed { index, sensor ->
             Entry(index.toFloat(), sensor.sound.toFloat())
         }
 
-        // Lấy danh sách timestamps
+
         val timestamps = list.map { it.time }
 
-        val dataSet = LineDataSet(listEntry, "Nhiệt độ")
+        val dataSet = LineDataSet(listEntry, "Sound")
         dataSet.color = ContextCompat.getColor(binding.root.context, R.color.red)
         dataSet.valueTextSize = 12f
         dataSet.setDrawValues(false)
@@ -92,20 +92,17 @@ class DetailSoundActivity : AppCompatActivity() {
         val lineData = LineData(dataSet)
         binding.chart.data = lineData
 
-        // Cấu hình trục X với TimeFormatter
         val xAxis = binding.chart.xAxis
         xAxis.position = XAxis.XAxisPosition.BOTTOM
 
-        // Tạo và cấu hình TimeFormatter
+
         val timeFormatter = TimeFormatter()
         timeFormatter.setTimestamps(timestamps)
         xAxis.valueFormatter = timeFormatter
 
         xAxis.setDrawGridLines(false)
         xAxis.granularity = 1f
-        xAxis.setLabelCount(5, false) // Hiển thị tối đa 5 labels để tránh chen chúc
-        xAxis.labelRotationAngle = -45f // Xoay labels 45 độ để dễ đọc
-
+        xAxis.setLabelCount(5, false)
 
         binding.chart.axisRight.isEnabled = false
         val yAxisLeft = binding.chart.axisLeft
@@ -128,9 +125,4 @@ class DetailSoundActivity : AppCompatActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.insertDataToRoom()
-    }
 }
