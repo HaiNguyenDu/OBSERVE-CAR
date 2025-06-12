@@ -44,7 +44,7 @@ class ItemAdapter(
                     } else { // state = false là an toàn
                         tvTitle.text = "Phát hiện chuyển động"
                         tvDe.text = "Phát hiện chuyển động an toàn trong khu vực."
-                        icCard.setBackgroundResource(R.drawable.bg_green)
+                        icCard.setBackgroundResource(R.drawable.bg_blue)
                         tvWarning.text = "An toàn"
                         tvWarning.setTextColor(context.getColor(R.color.blue))
                         Glide.with(context)
