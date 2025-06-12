@@ -8,15 +8,6 @@
     android:background="@color/black"
     tools:context=".DetailCameraActivity">
 
-    <ImageView
-        android:id="@+id/btn_back"
-        android:layout_width="@dimen/size_30"
-        android:layout_height="@dimen/size_30"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginStart="@dimen/size_20"
-        android:layout_marginTop="@dimen/size_20"
-        android:src="@drawable/ic_back" />
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -52,4 +43,14 @@
             android:textSize="@dimen/font_20"
             android:visibility="gone" />
     </androidx.cardview.widget.CardView>
+
+    <ImageView
+        android:id="@+id/btn_back"
+        android:layout_width="@dimen/size_40"
+        android:layout_height="@dimen/size_40"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="@dimen/size_20"
+        android:layout_marginTop="@dimen/size_20"
+        android:src="@drawable/ic_back" />
 </androidx.constraintlayout.widget.ConstraintLayout>

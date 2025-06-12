@@ -30,5 +30,63 @@
             android:textSize="@dimen/font_16"
             app:layout_constraintStart_toEndOf="@+id/ic_warning"
             app:layout_constraintTop_toTopOf="@id/ic_warning" />
+
+        <TextView
+            android:maxWidth="@dimen/size_200"
+            android:id="@+id/tv_de"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_20"
+            android:fontFamily="@font/lato_regular"
+            android:text="Phát hiện người không xác định"
+            android:textColor="@color/grey"
+            android:textSize="@dimen/font_14"
+            app:layout_constraintStart_toEndOf="@+id/ic_warning"
+            app:layout_constraintTop_toBottomOf="@id/ic_warning" />
+
+        <FrameLayout
+            android:id="@+id/ic_card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/size_20"
+            android:background="@drawable/bg_redd"
+            app:cardCornerRadius="@dimen/size_5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tv_warning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="@dimen/size_5"
+                android:fontFamily="@font/lato_bold"
+                android:text="Cao"
+                android:textColor="@color/red"
+                android:textSize="@dimen/font_14" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/size_20"
+            android:fontFamily="@font/lato_regular"
+            android:text="Camera Master"
+            android:textColor="@color/grey"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/tv_title" />
+
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/size_20"
+            android:layout_marginBottom="@dimen/size_20"
+            android:fontFamily="@font/lato_regular"
+            android:text="2 phút trước"
+            android:textColor="@color/grey"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

@@ -30,9 +30,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     val allTrackingData: LiveData<List<Tracking>> = _allTrackingData
 
     init {
-        // Tải dữ liệu ban đầu khi ViewModel được tạo
         loadInitialData()
-        // Bắt đầu lắng nghe các thay đổi thời gian thực
         observeRealtimeData()
     }
 
@@ -42,11 +40,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     fun loadInitialData() {
         viewModelScope.launch {
             if (hasInternetAccess()) {
-                // Lấy bản ghi mới nhất
                 repository.getLatestTrackingData { tracking ->
                     _latestTracking.postValue(tracking)
                 }
-                // Lấy toàn bộ danh sách dữ liệu
                 repository.getAllTrackingData { list ->
                     _allTrackingData.postValue(list)
                 }

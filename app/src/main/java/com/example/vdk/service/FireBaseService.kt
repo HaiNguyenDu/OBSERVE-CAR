@@ -58,7 +58,8 @@ class FireBaseService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
+        val data = intent?.getIntExtra("start",0)
+        count = data ?:0
         when (intent?.action) {
             "pushNotification" -> {
                 val notification = NotificationCompat.Builder(this, CHANNEL_ID)
@@ -154,14 +155,12 @@ class FireBaseService : Service() {
     }
 
     private fun listenToFirebaseChanges() {
-        var count = 1
         valueEventListener = object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 val trackingData = snapshot.getValue(Tracking::class.java)
                 val state = trackingData?.state
-                if (count != 1)
+                if (count == 1)
                     sendNotification(state)
-                count = count + 1
             }
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {

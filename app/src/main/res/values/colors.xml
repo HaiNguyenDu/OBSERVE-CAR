@@ -16,4 +16,6 @@
     <color name="red_opacity">#33E33A3A</color>
     <color name="bg_grey">#D3D3D3</color>
     <color name="bg">#EEEEEE</color>
+    <color name="blue_opacity">#3324ACD2</color>
+    <color name="green_opacity">#330FC416</color>
 </resources>

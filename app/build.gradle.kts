@@ -43,6 +43,7 @@ android {
 
 dependencies {
     implementation("androidx.core:core-ktx:1.16.0")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
     val room_version = "2.7.1"
     implementation("io.reactivex.rxjava2:rxjava:2.2.21")
     implementation("io.reactivex.rxjava2:rxandroid:2.1.1")

@@ -35,17 +35,37 @@
         app:layout_constraintTop_toBottomOf="@id/tv_header" />
 
     <TextView
-        app:layout_constraintTop_toBottomOf="@+id/tv_title"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textSize="@dimen/font_16"
-        android:layout_marginTop="@dimen/size_40"
         android:id="@+id/tv_today"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/size_20"
+        android:layout_marginTop="@dimen/size_40"
+        android:fontFamily="@font/lato_bold"
         android:text="Hôm nay"
         android:textColor="@color/black"
-        android:fontFamily="@font/lato_bold"
-        android:layout_marginStart="@dimen/size_20"
+        android:textSize="@dimen/font_16"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title"
 
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcv"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:paddingBottom="@dimen/size_20"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_today" />
+    <TextView
+        android:id="@+id/tv_no_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="@dimen/font_20"
+        android:text="Không có dữ liệu"
+        android:fontFamily="@font/lato_black"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>
