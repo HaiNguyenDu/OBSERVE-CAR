@@ -11,10 +11,10 @@ import android.graphics.BitmapFactory
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.IBinder
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import com.example.vdk.R
+import com.example.vdk.model.Tracking
 import com.example.vdk.ui.home.MainActivity
 import com.example.vdk.utils.FIREBASE_URL
 import com.example.vdk.utils.SOUND.CHANNEL_ID
@@ -24,7 +24,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 
 class FireBaseService : Service() {
-    private val database = FirebaseDatabase.getInstance(FIREBASE_URL).getReference("Notification")
+    private val database = FirebaseDatabase.getInstance(FIREBASE_URL).getReference("Stack")
     private var valueEventListener: ChildEventListener? = null
     private val player: MediaPlayer = MediaPlayer()
     private val player2: MediaPlayer = MediaPlayer()
@@ -60,33 +60,30 @@ class FireBaseService : Service() {
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         when (intent?.action) {
-            "offAll" -> {
-                val keyToDelete = "on"
-                player.pause()
-                database.child(keyToDelete)
-                    .removeValue()
-                Toast.makeText(this, "Mute Sound All Success", Toast.LENGTH_SHORT).show()
-            }
-
-            "offCar" -> {
-                player.pause()
-                Toast.makeText(this, "Mute Sound Car Success", Toast.LENGTH_SHORT).show()
-            }
-
             "pushNotification" -> {
-                if (count == 0) {
-                    player2.start()
-                    val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-                        .setSmallIcon(R.drawable.ic_warning_yellow)
-                        .setStyle(
-                            NotificationCompat.BigTextStyle()
-                                .bigText("There is an object in the car")
-                        )
-                        .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        .setAutoCancel(true)
-                        .build()
-                    notificationManager.notify(notificationIdTing, notification)
-                }
+                val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_warning_yellow)
+                    .setStyle(
+                        NotificationCompat.BigTextStyle()
+                            .bigText("Phát hiện người lạ")
+                    )
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setAutoCancel(true)
+                    .build()
+                notificationManager.notify(notificationIdTing, notification)
+            }
+
+            "pushNotificationNo" -> {
+                val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_warning_yellow)
+                    .setStyle(
+                        NotificationCompat.BigTextStyle()
+                            .bigText("Có chuyển động")
+                    )
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setAutoCancel(true)
+                    .build()
+                notificationManager.notify(notificationIdTing, notification)
             }
 
             "cancelNotification" -> {
@@ -116,7 +113,7 @@ class FireBaseService : Service() {
         }
     }
 
-    private fun sendNotification() {
+    private fun sendNotification(state: Boolean? = false) {
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
@@ -130,12 +127,16 @@ class FireBaseService : Service() {
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        player.start()
+        player2.start()
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_warning_yellow)
             .setLargeIcon(bitmap)
             .setStyle(
-                NotificationCompat.BigTextStyle().bigText("Nguy Hiểm Có Trẻ Nhỏ Trong Xe ❗ ❗ ❗ ❗ ❗")
+                NotificationCompat.BigTextStyle().bigText(
+                    if (state == true)
+                        "Phát hiện có người lạ"
+                    else "Có chuyển động"
+                )
             )
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
@@ -156,21 +157,20 @@ class FireBaseService : Service() {
         var count = 1
         valueEventListener = object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                val trackingData = snapshot.getValue(Tracking::class.java)
+                val state = trackingData?.state
                 if (count != 1)
-                    sendNotification()
+                    sendNotification(state)
                 count = count + 1
             }
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                player.pause()
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                player.pause()
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                player.pause()
             }
 
             override fun onCancelled(error: DatabaseError) {}

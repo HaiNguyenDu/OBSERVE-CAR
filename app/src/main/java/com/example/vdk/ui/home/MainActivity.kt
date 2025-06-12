@@ -2,11 +2,9 @@ package com.example.vdk.ui.home
 
 import android.Manifest
 import android.content.Intent
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,25 +14,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
+import com.example.vdk.DetailCameraActivity
+import com.example.vdk.HistoryActivity
 import com.example.vdk.R
 import com.example.vdk.databinding.ActivityMainBinding
-import com.example.vdk.service.FireBaseService
 import com.example.vdk.ui.HomeViewModel
-import com.example.vdk.ui.detail_sound.DetailSoundActivity
-import com.example.vdk.ui.detail_tem.DetailTemperatureActivity
-import com.example.vdk.utils.SOUND
-import com.example.vdk.utils.TEMPERATURE
-import com.github.niqdev.mjpeg.DisplayMode
-import com.github.niqdev.mjpeg.Mjpeg
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import rx.android.schedulers.AndroidSchedulers
-import rx.schedulers.Schedulers
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
-    private val TAG = "MJPEG_DEBUG" 
+    private val TAG = "MJPEG_DEBUG"
     private val viewModels: HomeViewModel by viewModels {
         ViewModelProvider.AndroidViewModelFactory.getInstance(application)
     }
@@ -52,7 +40,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(binding.root) // Chỉ gọi setContentView một lần
+        setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -66,157 +54,53 @@ class MainActivity : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onResume() {
-        super.onResume()
-        Log.d(TAG, "onResume: Setting up camera.")
-        setUpCamera()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d(TAG, "onPause: Stopping camera playback.")
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                binding.mjpegView.stopPlayback()
-                Log.d(TAG, "MjpegView playback stopped successfully in onPause.")
-            } catch (e: Exception) {
-                Log.e(TAG, "Error stopping MjpegView playback in onPause", e)
-            }
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun obverseLiveData() {
-        viewModels.latestSensor.observe(this) { sensor ->
-            binding.apply {
-                tvSound.text = sensor.getSoundFormat().toString()
-                tvTemperature.text = sensor.temperatureToString()
-                tvWeight.text = if (sensor.weight > 0) "There is an object in the car"
-                else "No objects in the car"
-                setUpState(sensor.getSoundFormat(), sensor.temperature)
+        viewModels.latestTracking.observe(this) { tracking ->
+            val state = tracking.state
+            tracking?.timestamp?.let { timestampInSeconds ->
+                val currentTimeInSeconds = System.currentTimeMillis() / 1000
+
+                val differenceInSeconds = Math.abs(currentTimeInSeconds - timestampInSeconds)
+
+
+                val timeAgoString = when {
+                    differenceInSeconds < 60 -> {
+                        "${differenceInSeconds.toLong()} giây trước"
+                    }
+
+                    differenceInSeconds < 3600 -> {
+                        val minutes = (differenceInSeconds / 60).toLong()
+                        "$minutes phút trước"
+                    }
+
+                    else -> {
+                        val hours = (differenceInSeconds / 3600).toLong()
+                        val remainingMinutes = ((differenceInSeconds % 3600) / 60).toLong()
+                        "$hours giờ $remainingMinutes phút trước"
+                    }
+                }
+                if (state == true) {
+                    binding.tvTitle.text = "Phát hiện kẻ lạ - $timeAgoString"
+                } else
+                    binding.tvTitle.text = "Phát hiện chuyển động - $timeAgoString"
+
+                Log.d("TimeCalculation", "Chuỗi thời gian đã định dạng: $timeAgoString")
             }
-            val intent = Intent(this@MainActivity, FireBaseService::class.java).apply {
-                putExtra("weight", sensor.weight)
-            }
-            startService(intent)
         }
     }
 
     private fun setOnClick() {
-        binding.layoutTemperature.setOnClickListener {
-            startActivity(Intent(this, DetailTemperatureActivity::class.java))
-            // finish() // Cân nhắc có nên finish() MainActivity ở đây không. Nếu finish() thì khi back sẽ không quay lại MainActivity.
-        }
-        binding.layoutSound.setOnClickListener {
-            startActivity(Intent(this, DetailSoundActivity::class.java))
-        }
-        binding.btnMuteAll.setOnClickListener {
-            val intent = Intent(this, FireBaseService::class.java)
-            intent.action = "offAll"
-            startService(intent)
-        }
-        binding.btnMutePhone.setOnClickListener {
-            val intent = Intent(this, FireBaseService::class.java)
-            intent.action = "offCar"
-            startService(intent)
-        }
-    }
-
-    private fun setUpState(sound: Double, temperature: Double) {
-        binding.apply {
-            when {
-                sound <= SOUND.NORMAL -> {
-                    tvSState.text = SOUND.NORMAL_MESSAGE
-                    tvSState.setTextColor(getColor(R.color.green))
-                }
-
-                sound <= SOUND.MEDIUM -> { // Sửa điều kiện này, có thể bạn muốn sound > SOUND.NORMAL && sound <= SOUND.MEDIUM
-                    tvSState.text = SOUND.MEDIUM_MESSAGE
-                    tvSState.setTextColor(getColor(R.color.green)) // Nên là màu khác nếu mức độ khác nhau
-                }
-
-                sound > SOUND.MEDIUM && sound <= SOUND.HIGH -> { // Giả sử SOUND.MEDIUM < SOUND.HIGH
-                    tvSState.text = SOUND.HIGH_MESSAGE
-                    tvSState.setTextColor(getColor(R.color.red))
-                }
-                // Thêm trường hợp cho sound > SOUND.HIGH nếu có
-            }
-            when {
-                temperature <= TEMPERATURE.LOW &&
-                        temperature > TEMPERATURE.COOL -> {
-                    tvTState.text = TEMPERATURE.LOW_MESSAGE
-                    tvTState.setTextColor(getColor(R.color.cold))
-                }
-
-                temperature <= TEMPERATURE.NORMAL &&
-                        temperature > TEMPERATURE.LOW -> {
-                    tvTState.text = TEMPERATURE.NORMAL_MESSAGE
-                    tvTState.setTextColor(getColor(R.color.green))
-                }
-
-                temperature <= TEMPERATURE.HIGH &&
-                        temperature > TEMPERATURE.NORMAL -> {
-                    tvTState.text = TEMPERATURE.HIGH_MESSAGE
-                    tvTState.setTextColor(getColor(R.color.yellow))
-                }
-
-                temperature > TEMPERATURE.HIGH -> { // Xử lý trường hợp nhiệt độ rất cao (nguy hiểm)
-                    tvTState.text = TEMPERATURE.DANGEROUS_MESSAGE
-                    tvTState.setTextColor(getColor(R.color.red))
-                }
-                // else -> { // Trường hợp còn lại, ví dụ nhiệt độ quá thấp (TEMPERATURE.COOL hoặc thấp hơn)
-                //    tvTState.text = "QUÁ LẠNH" // Hoặc một thông báo phù hợp
-                //    tvTState.setTextColor(getColor(R.color.blue)) // Ví dụ
-                // }
-            }
-        }
-    }
-
-    private fun setUpCamera() {
-        Log.d(TAG, "setUpCamera: Attempting to stop previous playback.")
-        // Dừng playback hiện tại (nếu có) trước khi bắt đầu stream mới.
-        // Nên chạy trên luồng IO nếu có khả năng block, nhưng stopPlayback của thư viện này thường nhanh.
-        // Thử gọi trực tiếp, nếu có vấn đề thì chuyển vào coroutine.
-        try {
-            binding.mjpegView.stopPlayback()
-        } catch (e: Exception) {
-            Log.e(TAG, "Error stopping playback in setUpCamera (อาจ không có gì để stop)", e)
-        }
-
-
-        binding.mjpegView.apply {
-            setDisplayMode(DisplayMode.BEST_FIT) // Hoặc DisplayMode.FULLSCREEN tùy theo nhu cầu
-            showFps(true)
-            setFpsOverlayBackgroundColor(Color.DKGRAY)
-            setFpsOverlayTextColor(Color.WHITE)
-            // Đảm bảo MjpegView được hiển thị và tvCamera bị ẩn khi bắt đầu thiết lập
-            visibility = View.VISIBLE
-        }
-        binding.tvCamera.visibility = View.GONE // Ẩn thông báo lỗi ban đầu
-
-        val url = "http://192.168.110.179:81/stream"
-        val timeoutSeconds = 10 // Tăng thời gian chờ lên một chút
-
-        Log.d(TAG, "setUpCamera: Opening Mjpeg stream from $url")
-        Mjpeg.newInstance()
-            .open(url, timeoutSeconds)
-            .subscribeOn(Schedulers.io()) // Thực hiện thao tác open() trên luồng I/O
-            .observeOn(AndroidSchedulers.mainThread()) // Nhận kết quả trên luồng chính
-            .subscribe(
-                { inputStream ->
-                    Log.d(TAG, "Mjpeg stream opened successfully. Setting source.")
-                    binding.tvCamera.visibility = View.GONE // Ẩn thông báo lỗi nếu có
-                    binding.mjpegView.visibility = View.VISIBLE
-                    binding.mjpegView.setSource(inputStream)
-
-                },
-                { error ->
-                    Log.e(TAG, "Failed to open Mjpeg stream", error)
-                    binding.tvCamera.text = "Failed to connect to camera"
-                    binding.tvCamera.visibility = View.VISIBLE
-                    binding.mjpegView.visibility = View.GONE // Ẩn view camera khi lỗi
-                }
+        binding.btnHistory.setOnClickListener {
+            startActivity(
+                Intent(this, HistoryActivity::class.java)
             )
+        }
+        binding.layoutStream.setOnClickListener {
+            startActivity(
+                Intent(this, DetailCameraActivity::class.java)
+            )
+
+        }
     }
 
 }

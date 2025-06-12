@@ -14,7 +14,6 @@ data class Sensor(
         return "$value º"
     }
 
-
     fun getSoundFormat(): Double {
         return (((sound * 10) / 102.3).roundToInt().toDouble() / 10)
     }

@@ -2,114 +2,99 @@ package com.example.vdk.ui
 
 import android.app.Application
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.vdk.data.Repository
-import com.example.vdk.model.Sensor
+import com.example.vdk.model.Tracking
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
-import kotlin.random.Random
 
 @RequiresApi(Build.VERSION_CODES.O)
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = Repository(application)
 
-    private val _latestSensor = MutableLiveData<Sensor>()
-    val latestSensor: LiveData<Sensor> = _latestSensor
 
-    private val _todaySensors = MutableLiveData<List<Sensor>>()
-    val todaySensors: LiveData<List<Sensor>> = _todaySensors
+    private val _latestTracking = MutableLiveData<Tracking>()
+    val latestTracking: LiveData<Tracking> = _latestTracking
+
+    // LiveData cho danh sách tất cả các bản ghi theo dõi
+    private val _allTrackingData = MutableLiveData<List<Tracking>>()
+    val allTrackingData: LiveData<List<Tracking>> = _allTrackingData
 
     init {
+        // Tải dữ liệu ban đầu khi ViewModel được tạo
+        loadInitialData()
+        // Bắt đầu lắng nghe các thay đổi thời gian thực
         observeRealtimeData()
-        fetchLatestSensor()
     }
 
-    private fun observeRealtimeData() {
-        repository.registerObserveData { sensor ->
-            _latestSensor.value = sensor
-            todaySensors.value?.size?.let {
-                if (it > 0) {
-                    fetchTodayData()
-                }
-            }
-        }
-    }
-
-    private fun fetchLatestSensor() {
-        repository.getLatestSensorData { sensor ->
-            _latestSensor.postValue(sensor)
-        }
-    }
-
-    fun addDataRandomly(
-        count: Int = 200,
-        intervalMillis: Long = 5000L,
-    ) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repeat(count) {
-                val newSensor = Sensor(
-                    sound = (1..1023).random().toDouble(),
-                    temperature = Random.nextDouble(33.0, 34.0),
-                    time = 0,
-                    weight = 0.0
-                )
-                repository.addData(newSensor)
-                delay(intervalMillis)
-            }
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun fetchTodayData() {
+    /**
+     * Tải dữ liệu ban đầu từ repository.
+     */
+    fun loadInitialData() {
         viewModelScope.launch {
-            val isOnline = hasInternetAccess()
-            if (isOnline) {
-                repository.getDataToday { list ->
-                    _todaySensors.value = list
+            if (hasInternetAccess()) {
+                // Lấy bản ghi mới nhất
+                repository.getLatestTrackingData { tracking ->
+                    _latestTracking.postValue(tracking)
                 }
-                insertDataToRoom()
-            } else getAllSensorRoom()
-
+                // Lấy toàn bộ danh sách dữ liệu
+                repository.getAllTrackingData { list ->
+                    _allTrackingData.postValue(list)
+                }
+            } else {
+                Log.w("HomeViewModel", "No internet access. Could not load initial data.")
+                // Tại đây, bạn có thể xử lý logic khi không có mạng
+                // ví dụ: hiển thị thông báo hoặc tải dữ liệu từ cache (nếu có)
+            }
         }
     }
 
-    fun insertDataToRoom() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val list = todaySensors.value ?: return@launch
-            val Items = list
-            repository.deleteDataRoom()
-            repository.insertDataToRoom(Items)
+    /**
+     * Đăng ký listener để nhận dữ liệu mới trong thời gian thực.
+     */
+    private fun observeRealtimeData() {
+        repository.registerObserveData { newTracking ->
+            // Cập nhật bản ghi mới nhất
+            _latestTracking.postValue(newTracking)
+
+            // Thêm bản ghi mới vào đầu danh sách hiện tại để cập nhật UI
+            val currentList = _allTrackingData.value?.toMutableList() ?: mutableListOf()
+            currentList.add(0, newTracking) // Thêm vào đầu danh sách
+            _allTrackingData.postValue(currentList)
         }
     }
 
+    /**
+     * Dọn dẹp listener khi ViewModel bị hủy.
+     */
     override fun onCleared() {
         super.onCleared()
+        // Hủy đăng ký listener để tránh rò rỉ bộ nhớ
+        repository.unregisterObserveData()
     }
 
-    fun getAllSensorRoom() {
-        viewModelScope.launch {
-            val list = repository.getAllSensor()
-            _todaySensors.value = list
-        }
-    }
-
-    suspend fun hasInternetAccess(): Boolean = withContext(Dispatchers.IO) {
+    /**
+     * Kiểm tra kết nối Internet.
+     */
+    private suspend fun hasInternetAccess(): Boolean = withContext(Dispatchers.IO) {
         return@withContext try {
+            // Sử dụng một trang web đáng tin cậy để kiểm tra kết nối
             val url = URL("https://www.google.com")
-            val connection = url.openConnection() as
-                    HttpURLConnection
+            val connection = url.openConnection() as HttpURLConnection
             connection.connectTimeout = 3000
             connection.connect()
             connection.responseCode == 200
-        } catch (e: Exception) {
+        } catch (e: IOException) {
+            Log.e("HomeViewModel", "Internet check failed", e)
             false
         }
     }
